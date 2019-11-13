@@ -12,3 +12,10 @@ This application, automates Google Lighthouse tests of your website to track the
 - a free acount in https://logz.io/
 - docker App Linux and python environment
 
+## step by step
+- update the urlConfig.json with your pages 
+- create an app to exec the test.sh script with a cron tab
+- push the data to your logz.io account
+- import LightHouse Dashboard config (json)
+- follow your metrics
+
