@@ -1,4 +1,4 @@
-# lighthouse-bencher
+# Google Lighthouse Bencher
 Dev by the Performance War Team at https://www.reezocar.com
 
 This application, automates Google Lighthouse tests of your website to track the evolution of the important "loading time" metrics in your seo optimization.
