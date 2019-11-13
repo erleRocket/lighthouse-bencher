@@ -3,6 +3,8 @@ Dev by the Performance War Team at https://www.reezocar.com
 
 This application, automates Google Lighthouse tests of your website to track the evolution of the important "loading time" metrics in your seo optimization.
 
+![https://www.reezocar.com Speed Index SEO optimization](https://github.com/erleRocket/lighthouse-bencher/blob/master/SEO-optim-win.png)
+
 ## humans behind this app
 - devops@reezocar.com ( Ludovic Pichon & Séverin Seux )
 - erle@reezocar.com ( Erlé Alberton )
