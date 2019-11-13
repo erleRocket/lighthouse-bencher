@@ -1,2 +1,6 @@
 # lighthouse-bencher
-this application, automates lighthouse testing of your site to track the evolution of important loading time metrics for your seo
+this application, automates lighthouse tests of your website to track the evolution of the important "loading time" metrics in your seo optimization
+
+## requirements
+- a free acount in [https://www.logz.io](logz.io)
+- docker
