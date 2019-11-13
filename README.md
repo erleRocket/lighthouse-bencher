@@ -14,7 +14,7 @@ This application, automates Google Lighthouse tests of your website to track the
 - a free acount in https://logz.io/
 - docker App Linux and python environment
 
-*Prérequis*
+*Pre requirements*
 
 - python 3
 - npm & nodeJS
