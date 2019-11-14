@@ -6,9 +6,9 @@ This application, automates Google Lighthouse tests of your website to track the
 ![https://www.reezocar.com Speed Index SEO optimization](https://github.com/erleRocket/lighthouse-bencher/blob/master/SEO-optim-win.png)
 
 ## humans behind this app
-- #DEVOPS : devops@reezocar.com (Ludovic Pichon)
-- #DEV #SEO : erle@reezocar.com (Erlé Alberton)
-- #CTO @Reezocar (Vincent Deboeuf)
+- #DEVOPS : Ludovic Pichon
+- #DEV #SEO : Erlé Alberton
+- #CTO @Reezocar : Vincent Deboeuf
 
 ## requirements
 - a free acount in https://logz.io/
