@@ -30,12 +30,11 @@ This application, automates Google Lighthouse tests of your website to track the
 - `pip install requests==2.14.2`
 - `pip install seaborn==0.9.0`
 - `pip install tqdm==4.31.1`
-- `pip install plotly`
 
 ## step by step
-- update the urlConfig.json with your pages 
+- update the urlConfig.json with your URLs
 - create an app to exec the test.sh script with a cron tab
-- push the data to your logz.io account
+- create a cron tab push the data to your logz.io account
 - import LightHouse Dashboard config (json)
 - follow your metrics
 
