@@ -1,115 +1,100 @@
 #!/usr/bin/python
 
 import os
+import sys
 import json
 import re
-import csv
-import seaborn as sns
-import matplotlib.pyplot as plt
 import pandas as pd
 import sys, getopt
 
-resultDir = "./results"
+resultDir = "/lighthouse_bench/reports/lighthouse-auto/"
 results = []
 
-def main(argv):
-    argument = ''
-    usage = 'usage: parseResult.py -t <testName> -m <metric>'
+fileName = sys.argv[1]
 
-    # parse incoming arguments
-    try:
-        opts, args = getopt.getopt(argv,"h:tm")
-    except getopt.GetoptError:
-        print(usage)
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            usage()                     
-            sys.exit()  
-        elif opt in ("-t"):
-            test = arg
-        elif opt in ("-m"):
-            metric = arg
+report = {}
+parsedName = re.findall(r"([^-]+)-(\d+-?\d+)-([^_]+_?[^-]+)-.*", fileName)
+if len(parsedName)>0:
+    report['name'] = str(parsedName[0][0])
+    report['date'] = parsedName[0][1]
+    report['scope'] = str(parsedName[0][2])
+    report['tags'] = report['scope'].split("_")
 
-    for file in os.listdir(resultDir):
-        if file.endswith(".json"):
-            test = {}
-            parsedName = re.findall(r"([^-]+)-(\d+-?\d+)-([^_]+_?[^-]+)-.*", file)
-            if len(parsedName)>0:
-                test['name'] = str(parsedName[0][0])
-                test['date'] = parsedName[0][1]
-                test['scope'] = str(parsedName[0][2])
-                with open(resultDir+"/"+file) as f:
-                    data = json.load(f)
+    with open(resultDir+fileName) as f:
+        data = json.load(f)
+        report['requestedUrl'] = data['requestedUrl']
+        report['finalUrl'] = data['finalUrl']
+        report['fetchTime'] = data['fetchTime']
+        report['benchmarkIndex'] = data['environment']['benchmarkIndex']
+        
+        audits = data['audits']
+        numRawSwicth = 'numericValue' if 'numericValue' in audits['speed-index'].keys() else 'rawValue'
 
-                    test['speedIndex'] = data['audits']['metrics']['details']['items'][0]['speedIndex']
-                    test['observedSpeedIndex'] = data['audits']['metrics']['details']['items'][0]['observedSpeedIndex']
-                    test['firstContentfulPaint'] = data['audits']['metrics']['details']['items'][0]['firstContentfulPaint']
-                    test['observedLoad'] = data['audits']['metrics']['details']['items'][0]['observedLoad']
-                    test['diagnostics_numRequests'] = data['audits']['diagnostics']['details']['items'][0]['numRequests']
-                    #test['diagnostics_numScripts'] = data['audits']['diagnostics']['details']['items'][0]['numScripts']
-                    #test['diagnostics_numStylesheets'] = data['audits']['diagnostics']['details']['items'][0]['numStylesheets']
-                    #test['diagnostics_numFonts'] = data['audits']['diagnostics']['details']['items'][0]['numFonts']
-                    #test['numTasks'] = data['audits']['diagnostics']['details']['items'][0]['numTasks']
-                    #test['numTasksOver10ms'] = data['audits']['diagnostics']['details']['items'][0]['numTasksOver10ms']
-                    #test['numTasksOver25ms'] = data['audits']['diagnostics']['details']['items'][0]['numTasksOver25ms']
-                    #test['numTasksOver50ms'] = data['audits']['diagnostics']['details']['items'][0]['numTasksOver50ms']
-                    #test['numTasksOver100ms'] = data['audits']['diagnostics']['details']['items'][0]['numTasksOver100ms']
-                    #test['numTasksOver500ms'] = data['audits']['diagnostics']['details']['items'][0]['numTasksOver500ms']
-                    test['rtt'] = data['audits']['diagnostics']['details']['items'][0]['rtt']
-                    test['maxServerLatency'] = data['audits']['diagnostics']['details']['items'][0]['maxServerLatency']
-                    test['totalByteWeight'] = data['audits']['diagnostics']['details']['items'][0]['totalByteWeight']
-                    test['totalTaskTime'] = data['audits']['diagnostics']['details']['items'][0]['totalTaskTime']
-                    test['mainDocumentTransferSize'] = data['audits']['diagnostics']['details']['items'][0]['mainDocumentTransferSize']
+        report['speedIndex_score'] = audits['speed-index']['score']
+        report['speedIndex_numericValue'] = audits['speed-index'][numRawSwicth]
+        report['FCP_score'] = audits['first-contentful-paint']['score']
+        report['FCPnumericValue'] = audits['first-contentful-paint'][numRawSwicth]
+        report['FMP_score'] = audits['first-meaningful-paint']['score']
+        report['FMP_numericValue'] = audits['first-meaningful-paint'][numRawSwicth]
+        report['TTFB_score'] = audits['time-to-first-byte']['score']
+        report['TTFB_numericValue'] = audits['time-to-first-byte'][numRawSwicth]
+        report['JsThread_score'] = audits['mainthread-work-breakdown']['score']
+        report['JsThread_numericValue'] = audits['mainthread-work-breakdown'][numRawSwicth]
+        report['JsBootup_score'] = audits['bootup-time']['score']
+        report['JsBootup_numericValue'] = audits['bootup-time'][numRawSwicth]
 
-                    test['speedIndex_score'] = data['audits']['speed-index']['score']
-                    test['speedIndex_rawValue'] = data['audits']['speed-index']['rawValue']
+        metrics = audits['metrics']
+        metrics_item = metrics['details']['items'][0]
+        report['firstContentfulPaint'] = metrics_item['firstContentfulPaint']
+        report['firstMeaningfulPaint'] = metrics_item['firstMeaningfulPaint']
+        report['firstCPUIdle'] = metrics_item['firstCPUIdle']
+        report['interactive'] = metrics_item['interactive']
+        report['speedIndex'] = metrics_item['speedIndex']
+        report['estimatedInputLatency'] = metrics_item['estimatedInputLatency']
+        report['observedNavigationStart'] = metrics_item['observedNavigationStart']
+        report['observedNavigationStartTs'] = metrics_item['observedNavigationStartTs']
+        report['observedFirstPaint'] = metrics_item['observedFirstPaint']
+        report['observedFirstPaintTs'] = metrics_item['observedFirstPaintTs']
+        report['observedFirstContentfulPaint'] = metrics_item['observedFirstContentfulPaint']
+        report['observedFirstContentfulPaintTs'] = metrics_item['observedFirstContentfulPaintTs']
+        report['observedFirstMeaningfulPaint'] = metrics_item['observedFirstMeaningfulPaint']
+        report['observedFirstMeaningfulPaintTs'] = metrics_item['observedFirstMeaningfulPaintTs']
+        report['observedTraceEnd'] = metrics_item['observedTraceEnd']
+        report['observedTraceEndTs'] = metrics_item['observedTraceEndTs']
+        report['observedLoad'] = metrics_item['observedLoad']
+        report['observedLoadTs'] = metrics_item['observedLoadTs']
+        report['observedDomContentLoaded'] = metrics_item['observedDomContentLoaded']
+        report['observedDomContentLoadedTs'] = metrics_item['observedDomContentLoadedTs']
+        report['observedFirstVisualChange'] = metrics_item['observedFirstVisualChange']
+        report['observedFirstVisualChangeTs'] = metrics_item['observedFirstVisualChangeTs']
+        report['observedLastVisualChange'] = metrics_item['observedLastVisualChange']
+        report['observedLastVisualChangeTs'] = metrics_item['observedLastVisualChangeTs']
+        report['observedSpeedIndex'] = metrics_item['observedSpeedIndex']
+        report['observedSpeedIndexTs'] = metrics_item['observedSpeedIndexTs']
 
-                    test['FCP_score'] = data['audits']['first-contentful-paint']['score']
-                    test['FCPrawValue'] = data['audits']['first-contentful-paint']['rawValue']
+        diagnostics = audits['diagnostics']
+        diagnostics_item = diagnostics['details']['items'][0]
+        report['diagnostics_numRequests'] = diagnostics_item['numRequests']
+        report['rtt'] = diagnostics_item['rtt']
+        report['maxServerLatency'] = diagnostics_item['maxServerLatency']
+        report['totalByteWeight'] = diagnostics_item['totalByteWeight']
+        report['totalTaskTime'] = diagnostics_item['totalTaskTime']
+        report['mainDocumentTransferSize'] = diagnostics_item['mainDocumentTransferSize']
+        #report['diagnostics_numScripts'] = diagnostics_item['numScripts']
+        #report['diagnostics_numStylesheets'] = diagnostics_item['numStylesheets']
+        #report['diagnostics_numFonts'] = diagnostics_item['numFonts']
+        #report['numTasks'] = diagnostics_item['numTasks']
+        #report['numTasksOver10ms'] = diagnostics_item['numTasksOver10ms']
+        #report['numTasksOver25ms'] = diagnostics_item['numTasksOver25ms']
+        #report['numTasksOver50ms'] = diagnostics_item['numTasksOver50ms']
+        #report['numTasksOver100ms'] = diagnostics_item['numTasksOver100ms']
+        #report['numTasksOver500ms'] = diagnostics_item['numTasksOver500ms']
 
-                    test['FMP_score'] = data['audits']['first-meaningful-paint']['score']
-                    test['FMP_rawValue'] = data['audits']['first-meaningful-paint']['rawValue']
+        results.append(report)
 
-                    test['TTFB_score'] = data['audits']['time-to-first-byte']['score']
-                    test['TTFB_rawValue'] = data['audits']['time-to-first-byte']['rawValue']
 
-                    #test['JsThread_score'] = data['audits']['mainthread-work-breakdown']['score']
-                    #test['JsThread_rawValue'] = data['audits']['mainthread-work-breakdown']['rawValue']
-
-                    #test['JsBootup_score'] = data['audits']['bootup-time']['score']
-                    #test['JsBootup_rawValue'] = data['audits']['bootup-time']['rawValue']
-
-                    #test['JsBootup_rawValue'] = data['audits']['bootup-time']['rawValue']
-
-                    results.append(test)
-
-    with open(resultDir+'/results.csv', 'w') as csvFile:
-        #fields = ['name', 'date', 'scope', 'diagnostics_numRequests', 'diagnostics_numScripts', 'diagnostics_numStylesheets', 'diagnostics_numFonts', 'numTasks','numTasksOver10ms','numTasksOver25ms', 'numTasksOver50ms', 'numTasksOver100ms', 'numTasksOver500ms','rtt','maxServerLatency','totalByteWeight','totalTaskTime','mainDocumentTransferSize','speedIndex_score', 'speedIndex_rawValue','FCP_score','FCPrawValue', 'FMP_score','FMP_rawValue','TTFB_score', 'TTFB_rawValue','JsThread_score', 'JsThread_rawValue', 'JsBootup_score', 'JsBootup_rawValue']
-        fields = ['name', 'date', 'scope', 'speedIndex', 'observedSpeedIndex', 'firstContentfulPaint', 'observedLoad','diagnostics_numRequests','rtt','maxServerLatency','totalByteWeight','totalTaskTime','mainDocumentTransferSize','speedIndex_score', 'speedIndex_rawValue','FCP_score','FCPrawValue', 'FMP_score','FMP_rawValue','TTFB_score', 'TTFB_rawValue',]
-        writer = csv.DictWriter(csvFile, fieldnames=fields)
-        writer.writeheader()
-        writer.writerows(results)
-
-        print("writing completed")
-        csvFile.close()
-
-    df = pd.read_csv(resultDir+'/results.csv')
-
-    #fig, ax = plt.subplots()
-    #g = sns.barplot(x='name', y='speedIndex', hue='scope', data=df)
-
-    def compareTest(aTests, df):
-        #fig, ax = plt.subplot()
-        df = df.loc[df['name'].isin(aTests)]
-        df = df.sort_values(by=['scope'])
-        ax = sns.barplot(x='scope', y=metric, hue='name', data=df)
-        plt.xticks(rotation=90)
-        fig = ax.get_figure()
-        fig.set_size_inches(15, 10)
-        fig.savefig(resultDir+'/output.png', dpi=400)
-
-    compareTest(['vanilla', test], df)
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
+df = pd.DataFrame(results)
+with open(resultDir+'/'+fileName.replace('.json','')+'-results.json', 'w') as outfile:
+    for row in df.iterrows():
+        row[1].to_json(outfile)
+        outfile.write("\n")
