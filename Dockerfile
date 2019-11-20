@@ -1,6 +1,6 @@
 FROM debian:sid
 LABEL name="lighthouse" \
-      description="Lighthouse analyzes web apps and web pages Reezocar."
+      description="Lighthouse continious web pages analysis created by https://www.reezocar.com DevOps & SEO team"
 
 # Install deps + add Chrome Stable + purge all the things
 RUN apt-get update && apt-get install -y \
@@ -42,4 +42,4 @@ RUN groupadd -r chrome && useradd -r -g chrome -G audio,video chrome \
 USER chrome
 
 WORKDIR /lighthouse_bench/
-CMD ["/bin/bash", "/lighthouse_bench/webPerfWarTeamTest.sh"]
+CMD ["/bin/bash", "/lighthouse_bench/webPerfTester.sh"]
