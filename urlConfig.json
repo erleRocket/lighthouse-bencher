@@ -1,3 +1,16 @@
-CONTEXT_PAGE https://www.lorem.com/ipsum/
+/*
+* by giving a context to an URL (you can separate multiples tags by using _
+*/
+CONTEXT_PAGE_TAG1_TAG2_etc https://www.lorem.com/ipsum/
 google_hp https://www.google.com/
-[...]
+
+//sample to remove
+hp /
+search /?q=reezocar
+search_p2_pagination /path/search.html?page=2
+search_p10_pagination /path/search.html?page=10
+search_bmw_SSM /path/search/bmw.html
+search_audi_SSM /path/search/audi.html
+search_audi_SSM_p2_pagination /path/search/audi.html?page=2
+search_audi_SSM_p10_pagination /path/search/audi.html?page=10
+search_audi_a1_SSMM /path/search/audi-a1.html
