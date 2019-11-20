@@ -1,0 +1,38 @@
+# vars to be defined:
+# DockerRepository:
+# PREFIX_NAME:
+# TOKEN: logz.io token
+
+version: '2'
+services:
+   lighthouse_prod_com:
+    image: [DockerRepository]/lighthouse:latest
+    hostname: lighthouse-com
+    container_name: lighthouse-com 
+    restart: always
+    environment:
+     - ENV_URL=https://www.xxx.com
+     - LOGZIOTOKEN=[TOKEN]
+     - ENV_NAME=[PREFIX_NAME]_COM
+     - URL_TYPE=all
+   lighthouse_prod_fr:
+    image: [DockerRepository]/lighthouse:latest
+    hostname: lighthouse-fr
+    container_name: lighthouse-fr
+    restart: always
+    environment:
+     - ENV_URL=https://www.xxx.fr
+     - LOGZIOTOKEN=[TOKEN]
+     - ENV_NAME=[PREFIX_NAME]_FR	
+     - URL_TYPE=all
+   lighthouse_preprod:
+    image: [DockerRepository]/lighthouse:latest
+    hostname: lighthouse-preprod
+    container_name: lighthouse-preprod
+    restart: always
+    environment:
+     - ENV_URL=https://preprod-seo.xxx.com
+     - URL_TYPE=all
+     - LOGZIOTOKEN=[TOKEN]
+     - ENV_NAME=[PREFIX_NAME]_PREPROD
+   #...
