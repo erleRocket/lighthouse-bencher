@@ -38,3 +38,6 @@ This application, automates Google Lighthouse tests of your website to track the
 - import LightHouse Dashboard config (json)
 - follow your metrics
 
+## launche
+Export ENV_NAME='dest' Export ENV_URL='www.xxx.com' Export LOGZIOTOKEN='[TOKEN]'
+
